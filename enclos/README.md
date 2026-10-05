@@ -1,4 +1,4 @@
-# Pentomino enclosed-area enumeration (F, L, N, T, Z)
+# enclos — pentomino enclosed-area enumeration (F, L, N, T, Z)
 
 ## Rules
 
