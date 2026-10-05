@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Pentomino enclosure enumeration</title>
+<style>
+  :root {
+    --bg: #121212; --panel: #1c1c1c; --text: #eee; --muted: #999;
+    --F:#E4572E; --L:#4E79A7; --N:#59A14F; --T:#F28E2B; --Z:#B07AA1; --hole:#222;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #2a221c, var(--bg));
+    color: var(--text); min-height: 100vh;
+  }
+  header {
+    padding: 1.25rem 1.75rem 0.5rem; display:flex; justify-content:space-between;
+    align-items:baseline; gap:1rem; flex-wrap:wrap;
+  }
+  h1 { font-size: 1.35rem; font-weight: 600; margin: 0; letter-spacing: 0.02em; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+  main { display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem 1.75rem 2rem; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid #333; border-radius: 12px;
+    padding: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  .card h2 { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 500; color: #ccc; }
+  .stats { display:flex; flex-wrap:wrap; gap:0.75rem 1.25rem; padding: 0 1.75rem 0.5rem; }
+  .stat { background:#222; border-radius:8px; padding:0.55rem 0.85rem; min-width: 7rem; }
+  .stat .k { display:block; color:var(--muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; }
+  .stat .v { font-size:1.25rem; font-weight:600; }
+  canvas { width:100%; height:auto; image-rendering: pixelated; background:#0d0d0d; border-radius:8px; }
+  #msg { padding: 0 1.75rem 1rem; color:#c8c8c8; font-size:0.92rem; min-height:1.4em; }
+  .legend { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.75rem; }
+  .swatch { display:flex; align-items:center; gap:0.35rem; font-size:0.8rem; color:#bbb; }
+  .swatch i { width:14px; height:14px; border-radius:3px; display:inline-block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>F · L · N · T · Z — enclosed area enumeration</h1>
+  <div class="sub">24 permutations · 8 transforms · side/vertex contact</div>
+</header>
+<div class="stats" id="stats"></div>
+<div id="msg"></div>
+<main>
+  <section class="card">
+    <h2>Current placement</h2>
+    <canvas id="cur" width="520" height="520"></canvas>
+  </section>
+  <section class="card">
+    <h2>Best so far</h2>
+    <canvas id="best" width="520" height="520"></canvas>
+    <div class="legend">
+      <div class="swatch"><i style="background:var(--F)"></i>F</div>
+      <div class="swatch"><i style="background:var(--L)"></i>L</div>
+      <div class="swatch"><i style="background:var(--N)"></i>N</div>
+      <div class="swatch"><i style="background:var(--T)"></i>T</div>
+      <div class="swatch"><i style="background:var(--Z)"></i>Z</div>
+      <div class="swatch"><i style="background:#111; outline:1px solid #666"></i>enclosed</div>
+    </div>
+  </section>
+</main>
+<script>
+const COLORS = {F:'#E4572E', L:'#4E79A7', N:'#59A14F', T:'#F28E2B', Z:'#B07AA1'};
+
+function drawBoard(canvas, labels, holes) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.fillStyle = '#0d0d0d';
+  ctx.fillRect(0,0,W,H);
+  const cells = Object.keys(labels||{}).map(k => {
+    const [r,c] = k.split(',').map(Number); return [r,c,labels[k]];
+  });
+  const holeCells = (holes||[]).map(h => [h[0], h[1]]);
+  if (!cells.length) {
+    ctx.fillStyle = '#666';
+    ctx.font = '16px sans-serif';
+    ctx.fillText('waiting…', 20, 40);
+    return;
+  }
+  const all = cells.map(([r,c]) => [r,c]).concat(holeCells);
+  let r0=Infinity,r1=-Infinity,c0=Infinity,c1=-Infinity;
+  for (const [r,c] of all) { r0=Math.min(r0,r); r1=Math.max(r1,r); c0=Math.min(c0,c); c1=Math.max(c1,c); }
+  r0--; r1++; c0--; c1++;
+  const rows = r1-r0+1, cols = c1-c0+1;
+  const size = Math.floor(Math.min((W-20)/cols, (H-20)/rows));
+  const ox = Math.floor((W - size*cols)/2);
+  const oy = Math.floor((H - size*rows)/2);
+  const holeSet = new Set(holeCells.map(([r,c]) => r+','+c));
+  const labMap = {};
+  for (const [r,c,n] of cells) labMap[r+','+c] = n;
+  for (let r=r0; r<=r1; r++) {
+    for (let c=c0; c<=c1; c++) {
+      const key = r+','+c;
+      const x = ox + (c-c0)*size;
+      const y = oy + (r-r0)*size;
+      if (labMap[key]) ctx.fillStyle = COLORS[labMap[key]];
+      else if (holeSet.has(key)) ctx.fillStyle = '#1a1a1a';
+      else ctx.fillStyle = '#2a2a2a';
+      ctx.fillRect(x, y, size-1, size-1);
+      if (labMap[key]) {
+        ctx.fillStyle = '#fff';
+        ctx.font = Math.max(10, Math.floor(size*0.45)) + 'px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(labMap[key], x+size/2, y+size/2+1);
+      } else if (holeSet.has(key)) {
+        ctx.fillStyle = '#888';
+        ctx.beginPath();
+        ctx.arc(x+size/2, y+size/2, Math.max(2, size*0.12), 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
+function render(s) {
+  document.getElementById('stats').innerHTML = [
+    ['permutation', s.perm || '—'],
+    ['depth', s.depth ?? '—'],
+    ['nodes', (s.nodes||0).toLocaleString()],
+    ['complete', (s.complete||0).toLocaleString()],
+    ['with hole', (s.with_hole||0).toLocaleString()],
+    ['best area', s.best_area ?? 0],
+    ['elapsed', (s.elapsed||0).toFixed(1) + 's'],
+  ].map(([k,v]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+  document.getElementById('msg').textContent = s.message || '';
+  drawBoard(document.getElementById('cur'), s.current_labels, s.current_holes);
+  drawBoard(document.getElementById('best'), s.best_labels, s.best_holes);
+}
+
+async function tick() {
+  try {
+    const res = await fetch('state.json?ts=' + Date.now(), {cache:'no-store'});
+    if (res.ok) render(await res.json());
+  } catch (e) {}
+}
+tick();
+setInterval(tick, 400);
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+area=20
+perm=deep
+..NNNZZ..
+.NN···Z..
+F·····ZZ.
+FFF····T.
+.F·····T.
+..L···TTT
+..LLLL...

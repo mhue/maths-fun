@@ -1,0 +1,7 @@
+{
+  "area": 16,
+  "optimal": false,
+  "H": 9,
+  "W": 9,
+  "art": "..ZZLLLL.\n..Z\u00b7\u00b7\u00b7\u00b7L.\n.ZZ\u00b7\u00b7\u00b7\u00b7N.\n...F\u00b7\u00b7\u00b7NN\n...FFF\u00b7\u00b7N\n....F\u00b7\u00b7\u00b7N\n.....TTT.\n......T..\n......T.."
+}

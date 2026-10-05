@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+viz/progress.jsonl
+viz/state.json.tmp
