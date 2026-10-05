@@ -6,7 +6,7 @@ import http.server
 import os
 from pathlib import Path
 
-DIR = Path("/workspace/pentomino-fence/viz")
+DIR = Path("/workspace/enclos/viz")
 os.chdir(DIR)
 
 class Handler(http.server.SimpleHTTPRequestHandler):

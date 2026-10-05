@@ -97,7 +97,7 @@ def write_viz(holder, labels, holes, msg):
             indent=2,
         )
     )
-    Path("/workspace/pentomino-fence/best.txt").write_text(
+    Path("/workspace/enclos/best.txt").write_text(
         f"area={area}\nperm={holder.get('perm','polish')}\n{payload['best_art']}\n"
     )
     fig, ax = plt.subplots(figsize=(6, 6))

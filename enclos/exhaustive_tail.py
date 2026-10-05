@@ -199,10 +199,10 @@ def main():
 
     print(f"FINAL {best}", flush=True)
     if best_info:
-        with open("/workspace/pentomino-fence/best.txt", "w") as f:
+        with open("/workspace/enclos/best.txt", "w") as f:
             f.write(f"area={best}\nperm={''.join(best_info['perm'])}\n")
             f.write(best_info["art"] + "\n")
-        with open("/workspace/pentomino-fence/search_result.json", "w") as f:
+        with open("/workspace/enclos/search_result.json", "w") as f:
             json.dump(best_info, f, indent=2)
 
 

@@ -238,9 +238,9 @@ def main():
     args = ap.parse_args()
     result = solve(args.H, args.W, args.time, require_connected=not args.no_connect)
     if result:
-        with open("/workspace/pentomino-fence/cpsat_result.json", "w") as f:
+        with open("/workspace/enclos/cpsat_result.json", "w") as f:
             json.dump(result, f, indent=2)
-        with open("/workspace/pentomino-fence/best.txt", "w") as f:
+        with open("/workspace/enclos/best.txt", "w") as f:
             f.write(f"area={result['area']}\noptimal={result['optimal']}\n")
             f.write(result["art"] + "\n")
 

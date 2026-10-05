@@ -40,7 +40,7 @@ from matplotlib.patches import Rectangle
 Cell = Tuple[int, int]
 Shape = frozenset[Cell]
 
-ROOT = Path("/workspace/pentomino-fence")
+ROOT = Path("/workspace/enclos")
 VIZ = ROOT / "viz"
 ART = Path("/opt/cursor/artifacts/screenshots")
 VIZ.mkdir(parents=True, exist_ok=True)

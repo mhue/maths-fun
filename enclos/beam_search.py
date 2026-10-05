@@ -271,11 +271,11 @@ def main():
         print(f"\nMAX = {global_best} in {time.time()-t0:.1f}s")
         if global_wit:
             print(global_wit["art"])
-            with open("/workspace/pentomino-fence/best.txt", "w") as f:
+            with open("/workspace/enclos/best.txt", "w") as f:
                 f.write(f"area={global_best}\n")
                 f.write(f"perm={''.join(global_wit['perm'])}\n")
                 f.write(global_wit["art"] + "\n")
-            with open("/workspace/pentomino-fence/beam_result.json", "w") as f:
+            with open("/workspace/enclos/beam_result.json", "w") as f:
                 json.dump(global_wit, f, indent=2)
 
     elif mode == "dfs":
@@ -292,7 +292,7 @@ def main():
         print(f"\nMAX = {best_holder[0]} in {time.time()-t0:.1f}s")
         if best_holder[1]:
             print(best_holder[1]["art"])
-            with open("/workspace/pentomino-fence/best.txt", "w") as f:
+            with open("/workspace/enclos/best.txt", "w") as f:
                 f.write(f"area={best_holder[0]}\n")
                 f.write(best_holder[1]["art"] + "\n")
 

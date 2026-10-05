@@ -274,7 +274,7 @@ def main():
         print(f"Permutation: {''.join(global_witness['perm'])}")
         print(global_witness["art"])
         # Save witness
-        with open("/workspace/pentomino-fence/best.txt", "w") as f:
+        with open("/workspace/enclos/best.txt", "w") as f:
             f.write(f"area={global_best}\n")
             f.write(f"perm={''.join(global_witness['perm'])}\n")
             f.write(global_witness["art"] + "\n")
